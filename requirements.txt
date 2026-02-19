@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+pydantic-settings
+google-generativeai
+langchain
+langchain-google-genai
+langchain-core
+supabase
+python-dotenv
+httpx
