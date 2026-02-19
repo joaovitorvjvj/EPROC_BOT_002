@@ -2,7 +2,7 @@
 
 ## 1) Estado atual confirmado
 - Backend FastAPI com rota `/chat` e endpoint raiz `GET /`.
-- Extração estruturada via LangChain + Gemini configurada em `ExtractionService`.
+- Extração estruturada via LangChain + Groq configurada em `ExtractionService`.
 - Persistência no Supabase via `ProcessRepository`.
 
 ## 2) Ajustes aplicados neste repositório
@@ -17,7 +17,8 @@
 1. Criar/editar Web Service e apontar para este repositório.
 2. Se o backend estiver em subpasta no futuro, ajustar `rootDir` em `render.yaml` ou no painel.
 3. Definir as variáveis de ambiente:
-   - `GEMINI_API_KEY`
+   - `GROQ_API_KEY`
+   - `GROQ_MODEL` (opcional, padrão: `llama-3.1-8b-instant`)
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `TAIGA_URL`

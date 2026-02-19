@@ -1,13 +1,13 @@
 import os
 
-from google import genai
+from langchain_groq import ChatGroq
 
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-response = client.models.generate_content(
-    model="gemini-2.5-flash-lite",
-    contents="Responda apenas OK",
+llm = ChatGroq(
+    model=os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
+    api_key=os.getenv("GROQ_API_KEY"),
+    temperature=0,
 )
 
-print(response.text)
+response = llm.invoke("Responda apenas OK")
+print(response.content)

@@ -1,4 +1,5 @@
 from typing import List
+
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -9,8 +10,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     STORAGE_PATH: str = "storage"
 
-    # API Keys
-    GEMINI_API_KEY: str
+    # LLM
+    GROQ_API_KEY: str
+    GROQ_MODEL: str = "llama-3.1-8b-instant"
 
     # Supabase
     SUPABASE_URL: str

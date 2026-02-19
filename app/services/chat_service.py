@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 
 from app.core.config import settings
 from app.core.logger import logger
@@ -11,9 +11,10 @@ from app.services.extraction_service import ExtractionService
 
 class ChatService:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=settings.GEMINI_API_KEY,
+        self.llm = ChatGroq(
+            model=settings.GROQ_MODEL,
+            api_key=settings.GROQ_API_KEY,
+            temperature=0.2,
         )
 
         self.repo = ProcessRepository()
@@ -68,8 +69,6 @@ class ChatService:
                     next_step_order += 1
 
             messages = [SystemMessage(content=self.system_prompt)]
-
-            # prioridade para histórico externo, fallback para memória do processo
             source_history = chat_history if chat_history else self.chat_memory.get(process_id or "", [])
 
             for msg in source_history:
@@ -103,7 +102,6 @@ class ChatService:
             return "⚠️ Tive um problema ao processar sua resposta. Pode repetir o último passo do processo?"
 
     async def start_new_mapping(self, process_name: str):
-        """Inicia um processo no banco e retorna o ID para o chat"""
         new_process = self.repo.create_process(process_name)
         if not new_process:
             raise RuntimeError("Não foi possível criar processo no banco.")
