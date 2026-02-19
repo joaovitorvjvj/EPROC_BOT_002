@@ -1,9 +1,6 @@
-.env
 venv/
+.env
 __pycache__/
 *.pyc
-storage/bpmn/*
-storage/docx/*
-storage/reports/*
-storage/temp/*
-!storage/**/.gitkeep
+storage/
+.vscode/

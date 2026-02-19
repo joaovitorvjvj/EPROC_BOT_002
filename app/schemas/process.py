@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from uuid import UUID
@@ -15,20 +15,13 @@ class ProcessBase(BaseModel):
 class ProcessCreate(ProcessBase):
     pass
 
-class ProcessUpdate(BaseModel):
-    status: Optional[str] = None
-    canvas_data: Optional[Dict[str, Any]] = None
-    taiga_card_id: Optional[int] = None
-    bpmn_path: Optional[str] = None
-    docx_path: Optional[str] = None
-    availability_dates: Optional[List[str]] = None
-
 class ProcessRead(ProcessBase):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     status: str
-    version: int
     created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
+    # Opcionais na leitura para evitar erros com dados legados ou nulos
+    secretariat: Optional[str] = None
+    owner: Optional[str] = None
+    requester_name: Optional[str] = None
+    mode: Optional[str] = None

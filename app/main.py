@@ -1,26 +1,21 @@
 from fastapi import FastAPI
-from app.api.routes import process_routes
-from app.services.storage_service import StorageService
-from app.core.config import settings
-from app.core.logger import logger
+from fastapi.middleware.cors import CORSMiddleware
+# Agora o caminho vai bater com a realidade física do arquivo
+from app.api.routes.chat_routes import router as chat_router
 
-app = FastAPI(
-    title=settings.SYSTEM_NAME,
-    description="Sistema de Automação de Mapeamento de Processos Organizacionais",
-    version="1.0.0"
+app = FastAPI(title="PMAS Backend")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Inicialização de infraestrutura
-@app.on_event("startup")
-async def startup_event():
-    logger.info(f"Iniciando {settings.SYSTEM_NAME}...")
-    storage = StorageService()
-    storage.ensure_dirs()
-    logger.info("Estrutura de diretórios verificada/criada.")
+# Registro da rota
+app.include_router(chat_router)
 
-# Inclusão das rotas
-app.include_router(process_routes.router)
-
-@app.get("/health", tags=["System"])
-async def health_check():
-    return {"status": "healthy", "system": settings.SYSTEM_NAME}
+@app.get("/")
+async def root():
+    return {"status": "online", "message": "PMAS corrigido!"}
