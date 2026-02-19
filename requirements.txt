@@ -10,3 +10,5 @@ langchain-core
 supabase
 python-dotenv
 httpx
+groq
+
