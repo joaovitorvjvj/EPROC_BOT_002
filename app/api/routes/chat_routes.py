@@ -1,38 +1,57 @@
-from fastapi import APIRouter, Body, HTTPException
-from app.services.chat_service import ChatService
+from typing import List, Optional
+
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
 from app.core.logger import logger
+from app.services.chat_service import ChatService
 
 router = APIRouter(tags=["Chat"])
 chat_service = ChatService()
 
+# Mapeia uma sessão de cliente para process_id para evitar novo INSERT a cada interação
+session_process_map: dict[str, str] = {}
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
 class ChatRequest(BaseModel):
     message: str
-    # O session_id pode ser o ID do processo no Supabase
-    process_id: str = None 
+    process_id: Optional[str] = None
+    client_session_id: Optional[str] = None
+    chat_history: Optional[List[ChatMessage]] = None
+
 
 @router.post("/chat")
 async def chat_endpoint(payload: ChatRequest):
     try:
-        # Se não houver um processo ativo, iniciamos um automaticamente
-        # (Isso garante que o site nunca trave)
         current_pid = payload.process_id
-        
+
+        if not current_pid and payload.client_session_id:
+            current_pid = session_process_map.get(payload.client_session_id)
+
         if not current_pid:
             logger.info("🆕 Iniciando novo mapeamento via Chat do Site...")
             current_pid = await chat_service.start_new_mapping("Processo via Chat Online")
 
-        # Chama o serviço que: Extrai dados -> Salva no Banco -> Gera Resposta
-        # Passamos uma lista vazia para o histórico por enquanto (ou podemos buscar no banco)
+        if payload.client_session_id:
+            session_process_map[payload.client_session_id] = current_pid
+
+        parsed_history = [message.model_dump() for message in payload.chat_history] if payload.chat_history else None
+
         response_text = await chat_service.get_next_question(
-            chat_history=[], 
             user_input=payload.message,
-            process_id=current_pid
+            process_id=current_pid,
+            chat_history=parsed_history,
         )
-        
+
         return {
             "response": response_text,
-            "process_id": current_pid
+            "process_id": current_pid,
+            "client_session_id": payload.client_session_id,
         }
 
     except Exception as e:
