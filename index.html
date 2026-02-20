@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>eproc</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Open Sans', sans-serif; color: #333; background: #fff; overflow-x: hidden; }
+
+    /* TOPBAR */
+    .gov-topbar { background: #1a3a2a; padding: 6px 0; }
+    .gov-topbar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+    .gov-topbar a { color: rgba(255,255,255,0.75); font-size: 0.7rem; text-decoration: none; padding: 2px 8px; border-right: 1px solid rgba(255,255,255,0.2); transition: color .2s; white-space: nowrap; }
+    .gov-topbar a:last-child { border-right: none; }
+    .gov-topbar a:hover { color: #fff; }
+
+    /* HEADER */
+    header { background: #fff; border-bottom: 3px solid #006633; position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .header-wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .header-logo { display: flex; align-items: center; }
+    .header-logo img { height: 48px; object-fit: contain; }
+    .logo-fallback { font-family: 'Montserrat',sans-serif; font-weight: 800; font-size: 1.4rem; color: #006633; display: none; }
+    .main-nav { display: flex; align-items: center; gap: 0; }
+    .main-nav > a, .dropdown > a { font-family: 'Montserrat',sans-serif; font-size: 0.74rem; font-weight: 600; color: #444; text-decoration: none; padding: 7px 9px; border-radius: 4px; transition: all .2s; white-space: nowrap; display: block; }
+    .main-nav > a:hover, .dropdown > a:hover { color: #006633; background: #f0f7f3; }
+    .dropdown { position: relative; }
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #fff; border: 1px solid #e0e0e0; border-top: 3px solid #006633; min-width: 230px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-radius: 0 0 6px 6px; z-index: 100; }
+    .dropdown:hover .dropdown-menu { display: block; }
+    .dropdown-menu a { font-family: 'Montserrat',sans-serif; font-size: 0.74rem; font-weight: 500; color: #444; padding: 9px 16px; border-bottom: 1px solid #f5f5f5; display: block; text-decoration: none; }
+    .dropdown-menu a:hover { background: #f0f7f3; color: #006633; }
+    .dropdown-sub { position: relative; }
+    .dropdown-sub-menu { display: none; position: absolute; left: 100%; top: 0; background: #fff; border: 1px solid #e0e0e0; border-top: 3px solid #006633; min-width: 190px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .dropdown-sub:hover .dropdown-sub-menu { display: block; }
+
+    /* HERO */
+    .hero { position: relative; min-height: 460px; display: flex; align-items: center; overflow: hidden; background: #0d2e1a; }
+    .hero-bg { position: absolute; inset: 0; background-image: url('https://www.seplan.sc.gov.br/eproc/wp-content/uploads/2024/07/344339707_627229795566480_300338268358171375_n.jpg'); background-size: cover; background-position: center top; opacity: 0.3; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,50,25,0.95) 0%, rgba(0,80,40,0.65) 55%, rgba(0,80,40,0.2) 100%); }
+    .hero-content { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 80px 20px; color: #fff; }
+    .hero-eyebrow { font-family: 'Montserrat',sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 10px; }
+    .hero-sub { font-family: 'Open Sans',sans-serif; font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
+    .hero-title { font-family: 'Montserrat',sans-serif; font-size: 2.8rem; font-weight: 800; line-height: 1.1; text-shadow: 0 2px 12px rgba(0,0,0,0.35); }
+
+    /* SECTION BASE */
+    section { padding: 68px 20px; }
+    .sw { max-width: 1200px; margin: 0 auto; }
+    .s-eye { font-family: 'Open Sans',sans-serif; font-size: 0.8rem; color: #006633; margin-bottom: 2px; }
+    .s-title { font-family: 'Montserrat',sans-serif; font-size: 1.85rem; font-weight: 800; color: #111; margin-bottom: 14px; }
+    .s-title span { color: #006633; }
+    .divider { width: 48px; height: 4px; background: #006633; margin-bottom: 28px; border-radius: 2px; }
+
+    /* SOBRE */
+    #sobre { background: #f8f9f8; }
+    .tab-bar { display: flex; border-bottom: 2px solid #e0e0e0; flex-wrap: wrap; margin-bottom: 24px; }
+    .tab { font-family: 'Montserrat',sans-serif; font-size: 0.76rem; font-weight: 600; color: #777; padding: 9px 16px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .2s; white-space: nowrap; }
+    .tab.active { color: #006633; border-bottom-color: #006633; }
+    .tab:hover { color: #006633; }
+    .prose { font-size: 0.9rem; line-height: 1.8; color: #555; max-width: 750px; }
+    .prose p { margin-bottom: 14px; }
+    .btn-g { display: inline-block; margin-top: 22px; background: #006633; color: #fff; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 0.8rem; padding: 11px 26px; border-radius: 4px; text-decoration: none; transition: background .2s; }
+    .btn-g:hover { background: #004d26; }
+
+    /* EIXOS */
+    #eixos { background: #fff; }
+    .eixos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .eixo-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 28px 24px; transition: box-shadow .25s, transform .25s; }
+    .eixo-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.09); transform: translateY(-3px); }
+    .eixo-n { font-family: 'Montserrat',sans-serif; font-size: 2.8rem; font-weight: 800; color: #e8f2ec; line-height: 1; margin-bottom: 10px; }
+    .eixo-card h3 { font-family: 'Montserrat',sans-serif; font-size: 0.9rem; font-weight: 700; color: #1a3a2a; margin-bottom: 10px; line-height: 1.4; }
+    .eixo-card p { font-size: 0.82rem; color: #666; line-height: 1.65; margin-bottom: 18px; }
+    .btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-gs { font-family: 'Montserrat',sans-serif; font-size: 0.73rem; font-weight: 700; background: #006633; color: #fff; padding: 7px 13px; border-radius: 4px; text-decoration: none; transition: background .2s; }
+    .btn-gs:hover { background: #004d26; }
+    .btn-os { font-family: 'Montserrat',sans-serif; font-size: 0.73rem; font-weight: 700; border: 1.5px solid #006633; color: #006633; padding: 6px 13px; border-radius: 4px; text-decoration: none; transition: all .2s; }
+    .btn-os:hover { background: #006633; color: #fff; }
+
+    /* CAPACITAÇÕES */
+    #capacitacoes { background: #f8f9f8; }
+
+    /* NUPROCS */
+    #nuprocs { background: #fff; }
+    .blockquote { border-left: 4px solid #006633; padding: 12px 18px; background: #f0f7f3; margin: 16px 0; font-style: italic; font-size: 0.87rem; color: #444; border-radius: 0 6px 6px 0; line-height: 1.7; }
+
+    /* NÚMEROS */
+    #numeros { background: #006633; color: #fff; }
+    #numeros .s-eye { color: rgba(255,255,255,0.65); }
+    #numeros .s-title { color: #fff; }
+    #numeros .divider { background: rgba(255,255,255,0.35); }
+    .nums-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 14px; }
+    .num-item { text-align: center; padding: 22px 10px; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; background: rgba(255,255,255,0.07); }
+    .num-v { font-family: 'Montserrat',sans-serif; font-size: 1.9rem; font-weight: 800; color: #fff; display: block; }
+    .num-l { font-size: 0.71rem; color: rgba(255,255,255,0.72); margin-top: 6px; line-height: 1.4; }
+
+    /* METODOLOGIA */
+    #metodologia { background: #f8f9f8; }
+    .metod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .badge { display: inline-block; background: #1a3a2a; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 0.76rem; font-weight: 700; padding: 5px 13px; border-radius: 4px; margin-bottom: 18px; }
+    .steps { display: flex; flex-direction: column; gap: 14px; }
+    .step { display: flex; gap: 14px; align-items: flex-start; background: #fff; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 4px solid #006633; }
+    .step-n { width: 34px; height: 34px; background: #006633; color: #fff; border-radius: 50%; font-family: 'Montserrat',sans-serif; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step h4 { font-family: 'Montserrat',sans-serif; font-size: 0.86rem; font-weight: 700; color: #1a3a2a; margin-bottom: 3px; }
+    .step p { font-size: 0.79rem; color: #666; line-height: 1.5; }
+
+    /* PORTFOLIO */
+    #portfolio { background: #fff; }
+
+    /* CONTEÚDOS */
+    #conteudos { background: #f8f9f8; }
+    .cont-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+    .cont-card { background: #fff; border-radius: 8px; padding: 26px 18px; border: 1px solid #e8e8e8; text-align: center; }
+    .cont-icon { font-size: 1.9rem; margin-bottom: 12px; }
+    .cont-card h3 { font-family: 'Montserrat',sans-serif; font-size: 0.86rem; font-weight: 700; color: #1a3a2a; margin-bottom: 10px; }
+    .em-breve { display: inline-block; background: #f0f0f0; color: #999; font-size: 0.67rem; font-weight: 700; font-family: 'Montserrat',sans-serif; padding: 3px 10px; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase; }
+
+    /* CONTATO */
+    #contatos { background: #1a3a2a; color: #fff; }
+    #contatos .s-eye { color: rgba(255,255,255,0.55); }
+    #contatos .s-title { color: #fff; }
+    #contatos .divider { background: rgba(255,255,255,0.25); }
+    .cont-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .cont-items { display: flex; flex-direction: column; gap: 22px; }
+    .cont-item { display: flex; gap: 14px; align-items: flex-start; }
+    .cont-ico { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+    .cont-item strong { display: block; font-size: 0.75rem; color: rgba(255,255,255,0.55); font-weight: 400; margin-bottom: 2px; }
+    .cont-item span { font-size: 0.9rem; color: #fff; font-weight: 600; }
+    .insta-box { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 28px; text-align: center; }
+    .insta-box .fab { font-size: 2.4rem; margin-bottom: 12px; display: block; }
+    .insta-box p { font-size: 0.82rem; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+    .insta-box strong { font-size: 1.05rem; color: #fff; font-family: 'Montserrat',sans-serif; }
+    .insta-box a { display: inline-block; margin-top: 16px; border: 1.5px solid rgba(255,255,255,0.45); color: #fff; font-family: 'Montserrat',sans-serif; font-size: 0.76rem; font-weight: 700; padding: 8px 18px; border-radius: 4px; text-decoration: none; transition: all .2s; }
+    .insta-box a:hover { background: rgba(255,255,255,0.14); }
+
+    /* FOOTER */
+    footer { background: #111; color: rgba(255,255,255,0.55); padding: 44px 20px 22px; }
+    .footer-wrap { max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px; margin-bottom: 36px; padding-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .footer-logo img { height: 34px; filter: brightness(0) invert(1); opacity: .8; margin-bottom: 12px; display: block; }
+    .footer-brand { font-size: 0.77rem; line-height: 1.7; }
+    .footer-col h4 { font-family: 'Montserrat',sans-serif; font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .06em; }
+    .footer-col a { display: block; color: rgba(255,255,255,0.48); font-size: 0.77rem; text-decoration: none; margin-bottom: 8px; transition: color .2s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 0.71rem; flex-wrap: wrap; gap: 10px; }
+    .footer-social { display: flex; gap: 12px; }
+    .footer-social a { color: rgba(255,255,255,0.45); font-size: 0.95rem; transition: color .2s; }
+    .footer-social a:hover { color: #fff; }
+
+    /* CHATBOT */
+    #chat-fab { position: fixed; bottom: 22px; right: 22px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .chat-tooltip { background: #1a3a2a; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 0.76rem; font-weight: 600; padding: 7px 13px; border-radius: 18px; white-space: nowrap; box-shadow: 0 3px 12px rgba(0,0,0,0.2); animation: fadeUp .4s ease; transition: opacity .3s; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+    .fab-btn { width: 56px; height: 56px; background: #006633; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 20px rgba(0,102,51,0.5); display: flex; align-items: center; justify-content: center; transition: all .25s; position: relative; }
+    .fab-btn:hover { background: #004d26; transform: scale(1.07); }
+    .fab-btn i { color: #fff; font-size: 1.3rem; }
+    .fab-pulse { position: absolute; top: -2px; right: -2px; width: 13px; height: 13px; background: #f5a623; border-radius: 50%; border: 2px solid #fff; }
+
+    #chat-window { position: fixed; bottom: 92px; right: 22px; width: 368px; max-height: 580px; background: #fff; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.18); display: flex; flex-direction: column; overflow: hidden; z-index: 9998; opacity: 0; transform: translateY(14px) scale(0.97); pointer-events: none; transition: all .28s cubic-bezier(.4,0,.2,1); }
+    #chat-window.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+    .chat-hdr { background: linear-gradient(135deg, #004d26, #006633); color: #fff; padding: 13px 16px; display: flex; align-items: center; gap: 11px; }
+    .chat-av { width: 36px; height: 36px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .chat-hi { flex: 1; }
+    .chat-hi strong { display: block; font-family: 'Montserrat',sans-serif; font-size: 0.86rem; font-weight: 700; }
+    .chat-hi span { font-size: 0.68rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 4px; }
+    .online-dot { width: 6px; height: 6px; background: #7fffb0; border-radius: 50%; display: inline-block; }
+    .chat-x { background: none; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 4px; border-radius: 4px; font-size: 0.95rem; transition: all .2s; }
+    .chat-x:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+    .chat-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; background: #f5f7f5; min-height: 300px; }
+    .chat-msgs::-webkit-scrollbar { width: 4px; }
+    .chat-msgs::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+    .msg { max-width: 82%; font-size: 0.82rem; line-height: 1.55; padding: 9px 12px; border-radius: 12px; word-break: break-word; animation: mIn .2s ease; }
+    @keyframes mIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+    .msg.bot { background: #fff; color: #333; border-bottom-left-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); align-self: flex-start; }
+    .msg.user { background: #006633; color: #fff; border-bottom-right-radius: 3px; align-self: flex-end; }
+    .typing { display: flex; gap: 5px; align-items: center; padding: 12px 14px; }
+    .dot { width: 7px; height: 7px; background: #bbb; border-radius: 50%; animation: bounce .85s infinite ease-in-out; }
+    .dot:nth-child(2){animation-delay:.14s} .dot:nth-child(3){animation-delay:.28s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+    .chat-ftr { padding: 9px 11px; background: #fff; border-top: 1px solid #eee; }
+    .chat-row { display: flex; gap: 7px; align-items: center; }
+    .chat-inp { flex: 1; padding: 8px 13px; border: 1.5px solid #ddd; border-radius: 20px; font-family: 'Open Sans',sans-serif; font-size: 0.81rem; outline: none; transition: border-color .2s; color: #333; }
+    .chat-inp:focus { border-color: #006633; }
+    .chat-inp::placeholder { color: #aaa; }
+    .chat-snd { width: 36px; height: 36px; background: #006633; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; }
+    .chat-snd:hover { background: #004d26; }
+    .chat-snd i { color: #fff; font-size: 0.85rem; }
+    .chat-snd:disabled { background: #ccc; cursor: not-allowed; }
+    .chat-pw { text-align: center; font-size: 0.61rem; color: #bbb; margin-top: 5px; font-family: 'Montserrat',sans-serif; }
+
+    /* RESPONSIVE */
+    @media(max-width:960px){
+      .eixos-grid{grid-template-columns:1fr}
+      .nums-grid{grid-template-columns:repeat(3,1fr)}
+      .metod-grid{grid-template-columns:1fr;gap:30px}
+      .cont-info-grid{grid-template-columns:1fr;gap:30px}
+      .footer-grid{grid-template-columns:1fr 1fr}
+      .cont-grid{grid-template-columns:repeat(2,1fr)}
+      .main-nav{display:none}
+    }
+    @media(max-width:600px){
+      .nums-grid{grid-template-columns:repeat(2,1fr)}
+      .footer-grid{grid-template-columns:1fr}
+      .hero-title{font-size:1.9rem}
+      #chat-window{width:calc(100vw - 28px);right:14px}
+      .cont-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR GOV -->
+<div class="gov-topbar">
+  <div class="gov-topbar-inner">
+    <a href="https://estado.sc.gov.br/noticias/" target="_blank">Agência de Notícias</a>
+    <a href="https://www.sc.gov.br/" target="_blank">Portal de Serviços</a>
+    <a href="https://portal.doe.sea.sc.gov.br/" target="_blank">Diário Oficial</a>
+    <a href="https://estado.sc.gov.br/acesso-a-informacao/" target="_blank">Acesso às Informações</a>
+    <a href="https://estado.sc.gov.br/orgaos-do-governo/" target="_blank">Órgãos do Governo</a>
+    <a href="https://estado.sc.gov.br/" target="_blank">Conheça SC</a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-wrap">
+    <a class="header-logo" href="#">
+      <img src="https://www.seplan.sc.gov.br/eproc/wp-content/uploads/2024/07/logo-sc.png" alt="EPROC SC" onerror="this.style.display='none';document.querySelector('.logo-fallback').style.display='block'">
+      <span class="logo-fallback">eproc</span>
+    </a>
+    <nav class="main-nav">
+      <a href="#">Início</a>
+      <a href="#sobre">Sobre o EPROC</a>
+      <div class="dropdown">
+        <a href="#eixos">Eixos de Atuação ▾</a>
+        <div class="dropdown-menu">
+          <div class="dropdown-sub">
+            <a href="#eixos">Disseminar a Cultura… ›</a>
+            <div class="dropdown-sub-menu">
+              <a href="https://enavirtual.sc.gov.br/course/index.php?categoryid=207" target="_blank">Acesso Rápido</a>
+              <a href="#capacitacoes">Saiba Mais</a>
+            </div>
+          </div>
+          <div class="dropdown-sub">
+            <a href="#eixos">Melhorar e Transformar… ›</a>
+            <div class="dropdown-sub-menu">
+              <a href="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSB7XoYBDh2dZhJRKzbttuwD2qWE5e1dWbycVNdtvXdOGjPrKSj2qIuqQuIQqIQ7g/pubhtml?gid=363958390&single=true&urp=gmail_link" target="_blank">Acesso Rápido</a>
+              <a href="#nuprocs">Saiba Mais</a>
+            </div>
+          </div>
+          <div class="dropdown-sub">
+            <a href="#portfolio">Gerir o Portfólio… ›</a>
+            <div class="dropdown-sub-menu">
+              <a href="https://ppn.sc.gov.br/" target="_blank">Acesso Rápido</a>
+              <a href="#portfolio">Saiba Mais</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="#capacitacoes">Sobre Capacitações</a>
+      <a href="#nuprocs">Informações sobre os NUPROCS</a>
+      <a href="#numeros">EPROC em Números</a>
+      <a href="#metodologia">Metodologia</a>
+      <a href="#portfolio">Nosso Portfólio</a>
+      <a href="#contatos">Contatos</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Secretaria de Estado do Planejamento</div>
+    <div class="hero-sub">Bem-Vindo ao</div>
+    <h1 class="hero-title">Escritório de Gestão<br>de Processos</h1>
+  </div>
+</div>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="sw">
+    <div class="s-eye">Sobre o</div>
+    <h2 class="s-title"><span>EPROC</span></h2>
+    <div class="divider"></div>
+    <p style="font-size:.93rem;color:#555;margin-bottom:18px;">Aumentar a eficiência dos serviços prestados pelo Estado de Santa Catarina:</p>
+    <div class="tab-bar">
+      <div class="tab active">Esse é o nosso propósito!</div>
+      <div class="tab">Sobre o EPROC</div>
+      <div class="tab">Missão, Visão e Valores</div>
+      <div class="tab">Como Fazemos</div>
+      <div class="tab">Legislação</div>
+      <div class="tab">Equipe</div>
+    </div>
+    <div class="prose">
+      <p>O <strong>Escritório de Gestão de Processos (EPROC)</strong> da Secretaria de Estado do Planejamento de Santa Catarina tem como missão aumentar a eficiência dos serviços prestados pelo Estado, disseminando e promovendo o gerenciamento de processos de negócio em toda a estrutura governamental catarinense.</p>
+      <p>Atuamos em três eixos estratégicos: disseminar a cultura de gestão por processos, melhorar e transformar processos através dos NUPROCS, e gerir o portfólio de processos do Governo de Santa Catarina.</p>
+    </div>
+    <a href="https://www.seplan.sc.gov.br/eproc/sobre-o-eproc/" class="btn-g" target="_blank">Saiba Mais sobre o EPROC</a>
+  </div>
+</section>
+
+<!-- EIXOS -->
+<section id="eixos">
+  <div class="sw">
+    <div class="s-eye">Eixos de</div>
+    <h2 class="s-title"><span>Atuação</span></h2>
+    <div class="divider"></div>
+    <div class="eixos-grid">
+      <div class="eixo-card">
+        <div class="eixo-n">01</div>
+        <h3>Disseminar a Cultura de Gestão por Processos de Negócio</h3>
+        <p>Capacitações regulares abertas a todos os servidores públicos, com cursos EAD e presenciais sobre BPM, BPMN e gestão por processos de negócio.</p>
+        <div class="btns">
+          <a href="https://enavirtual.sc.gov.br/course/index.php?categoryid=207" class="btn-gs" target="_blank">Acesso Rápido</a>
+          <a href="#capacitacoes" class="btn-os">Saiba Mais</a>
+        </div>
+      </div>
+      <div class="eixo-card">
+        <div class="eixo-n">02</div>
+        <h3>Melhorar e Transformar Processos de Negócio Através dos NUPROCS</h3>
+        <p>Núcleos de Gestão de Processos em cada órgão que coordenam iniciativas de melhoria, mapeamento e transformação com metodologia própria.</p>
+        <div class="btns">
+          <a href="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSB7XoYBDh2dZhJRKzbttuwD2qWE5e1dWbycVNdtvXdOGjPrKSj2qIuqQuIQqIQ7g/pubhtml?gid=363958390&single=true&urp=gmail_link" class="btn-gs" target="_blank">Acesso Rápido</a>
+          <a href="#nuprocs" class="btn-os">Saiba Mais</a>
+        </div>
+      </div>
+      <div class="eixo-card">
+        <div class="eixo-n">03</div>
+        <h3>Gerir o Portfólio de Processos de Negócio do Governo de SC</h3>
+        <p>Portfólio centralizado com todos os processos mapeados, cadeias de valor e iniciativas em desenvolvimento nos órgãos do Poder Executivo Estadual.</p>
+        <div class="btns">
+          <a href="https://ppn.sc.gov.br/" class="btn-gs" target="_blank">Acesso Rápido</a>
+          <a href="#portfolio" class="btn-os">Saiba Mais</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPACITAÇÕES -->
+<section id="capacitacoes">
+  <div class="sw">
+    <div class="s-eye">Sobre as</div>
+    <h2 class="s-title"><span>Capacitações</span></h2>
+    <div class="divider"></div>
+    <div class="tab-bar">
+      <div class="tab active">Cursos</div>
+      <div class="tab">Cursos Corporativos</div>
+      <div class="tab">Cursos Finalísticos</div>
+      <div class="tab">Secretaria de Estado do Planejamento - SEPLAN</div>
+    </div>
+    <div class="prose">
+      <p>Com o intuito de disseminar a cultura de gestão de processos, o Eproc oferece capacitações regulares sobre o tema, abertas a todos os interessados. Além disso, também disponibilizamos materiais e conteúdos técnicos na área de BPM.</p>
+      <p>Os cursos abrangem desde introdução ao BPM até modelagem avançada com notação BPMN 2.0, análise e melhoria de processos, além de workshops práticos aplicados à realidade do setor público catarinense.</p>
+    </div>
+    <a href="https://enavirtual.sc.gov.br/course/index.php?categoryid=207" class="btn-g" target="_blank">Acesse os Cursos</a>
+  </div>
+</section>
+
+<!-- NUPROCS -->
+<section id="nuprocs">
+  <div class="sw">
+    <div class="s-eye">Informações sobre</div>
+    <h2 class="s-title"><span>NUPROCS</span></h2>
+    <div class="divider"></div>
+    <p style="font-size:.9rem;color:#666;margin-bottom:18px;">Nuprocs são os Núcleos de Gestão de processos.</p>
+    <div class="tab-bar">
+      <div class="tab active">O que são os NUPROCS?</div>
+      <div class="tab">Como Instituir um NUPROC?</div>
+      <div class="tab">Os NUPROCS em Funcionamento</div>
+    </div>
+    <div class="prose">
+      <p>Os Núcleo de Gestão de Processos (ou apenas Nuproc) são grupos de trabalho, instituídos através de portaria, que coordenam as ações relacionadas a gestão de processos dentro de seus respectivos órgãos, sob coordenação e orientação do Eproc, com propósito de coordenar as bases, tendo como missão:</p>
+      <div class="blockquote">
+        "Disseminar e promover o gerenciamento de processos de negócio no âmbito dos respectivos órgãos, alinhado ao Modelo de Governança por Processos e à estratégia governamental, contribuindo para a melhoria da qualidade dos serviços prestados e entrega de valor à sociedade"
+      </div>
+      <p>Seu papel abrange desde a execução das iniciativas de melhoria de processo, através do ciclo de melhoria e transformação, o levantamento e priorização de processos, até a elaboração da arquitetura de processos e cadeia de valor da instituição.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NÚMEROS -->
+<section id="numeros">
+  <div class="sw">
+    <div class="s-eye">EPROC em</div>
+    <h2 class="s-title">Números</h2>
+    <div class="divider"></div>
+    <div class="nums-grid">
+      <div class="num-item"><span class="num-v">+500</span><div class="num-l">Alunos Matriculados</div></div>
+      <div class="num-item"><span class="num-v">+26</span><div class="num-l">NUPROCS Instituídos</div></div>
+      <div class="num-item"><span class="num-v">+450</span><div class="num-l">Processos em Desenvolvimento</div></div>
+      <div class="num-item"><span class="num-v">19</span><div class="num-l">Cursos Realizados<br><small style="opacity:.8;font-size:.65rem">14 Turmas EAD · 5 Workshop</small></div></div>
+      <div class="num-item"><span class="num-v">+160</span><div class="num-l">Pessoas Envolvidas</div></div>
+      <div class="num-item"><span class="num-v">+194</span><div class="num-l">Processos Envolvidos</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- METODOLOGIA -->
+<section id="metodologia">
+  <div class="sw">
+    <div class="s-eye">Nosso</div>
+    <h2 class="s-title"><span>Metodologia</span></h2>
+    <div class="divider"></div>
+    <p style="font-size:.88rem;color:#666;margin-bottom:30px;">Conheça a metodologia que criamos para a implantação do Modelo de Governança por Processos no Governo de Santa Catarina.</p>
+    <div class="metod-grid">
+      <div class="prose">
+        <span class="badge">Notação BPMN 2.0</span>
+        <p>Um dos grandes objetivos da implantação do Modelo de Governança por Processos consiste em aumentar a capacidade do Governo do Estado de Santa Catarina em prestar serviços à sociedade. A Gestão por Processos visa contribuir para a sustentabilidade do desempenho do Estado com a estruturação do trabalho por meio de processos que agreguem valor à sociedade.</p>
+        <p>Para cumprimento dos seus objetivos, o EPROC estabeleceu metodologia para gerenciamento de processos, condensada no documento <strong>Guia de Gerenciamento de Processos – Metodologia EPROC</strong> e em um conjunto de modelos de artefatos para condução de iniciativas, levando em consideração a integração e articulação com outras disciplinas de gestão.</p>
+        <p>O objetivo desta metodologia é servir de instrumento de orientação aos órgãos e entidades do Poder Executivo Estadual na condução de iniciativas de gestão de processos, descrevendo as etapas e atividades a serem realizadas e os produtos a serem gerados no decorrer de uma iniciativa.</p>
+        <p>A aplicação do Ciclo de Gestão de Processos, executada de forma contínua, permitirá aos seus executores a análise, o diagnóstico e a proposição das melhorias necessárias à otimização dos processos de negócio em análise.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div><h4>Levantamento e Priorização</h4><p>Identificação dos processos críticos e priorização das iniciativas de melhoria junto aos NUPROCS.</p></div></div>
+        <div class="step"><div class="step-n">2</div><div><h4>Mapeamento e Documentação</h4><p>Entrevistas técnicas, Canvas de Análise de Processo e geração de diagramas BPMN e Instruções de Trabalho.</p></div></div>
+        <div class="step"><div class="step-n">3</div><div><h4>Análise e Diagnóstico</h4><p>Identificação de oportunidades de melhoria, gargalos e ineficiências nos processos mapeados.</p></div></div>
+        <div class="step"><div class="step-n">4</div><div><h4>Melhoria e Transformação</h4><p>Implantação das melhorias com monitoramento contínuo dos resultados alcançados.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFÓLIO -->
+<section id="portfolio">
+  <div class="sw">
+    <div class="s-eye">Nosso</div>
+    <h2 class="s-title"><span>Portfólio</span></h2>
+    <div class="divider"></div>
+    <p style="font-size:.88rem;color:#666;margin-bottom:18px;">Veja todas as entregas realizadas pelo <strong>EPROC</strong> em parceria com os <strong>NUPROCS</strong></p>
+    <div class="tab-bar">
+      <div class="tab active">Processos de Negócio</div>
+      <div class="tab">Cadeia de Valores</div>
+      <div class="tab">Iniciativas em Desenvolvimento</div>
+    </div>
+    <p style="font-size:.87rem;color:#666;line-height:1.75;margin-bottom:22px;">O portfólio de processos do EPROC reúne todos os processos de negócio mapeados e documentados em parceria com os NUPROCS de cada secretaria e órgão do Governo de Santa Catarina, disponíveis no Portal de Processos de Negócio (PPN).</p>
+    <a href="https://www.seplan.sc.gov.br/eproc/portfolio/" class="btn-g" target="_blank">Conheça nosso Portfólio</a>
+  </div>
+</section>
+
+<!-- CONTEÚDOS -->
+<section id="conteudos">
+  <div class="sw">
+    <div class="s-eye">Nosso</div>
+    <h2 class="s-title"><span>Conteúdos</span></h2>
+    <div class="divider"></div>
+    <p style="font-size:.88rem;color:#666;margin-bottom:28px;">Com o intuito de disseminar a cultura de gestão de processos, o Eproc oferece capacitações regulares sobre o tema, abertas a todos os interessados. Além disso, também disponibilizamos materiais e conteúdos técnicos na área de BPM.</p>
+    <div class="cont-grid">
+      <div class="cont-card"><div class="cont-icon">❓</div><h3>O que é Gestão de Processos?</h3><span class="em-breve">Em Breve</span></div>
+      <div class="cont-card"><div class="cont-icon">🎓</div><h3>Capacitação</h3><span class="em-breve">Em Breve</span></div>
+      <div class="cont-card"><div class="cont-icon">📝</div><h3>Artigos</h3><span class="em-breve">Em Breve</span></div>
+      <div class="cont-card"><div class="cont-icon">📚</div><h3>Material de Apoio</h3><span class="em-breve">Em Breve</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contatos">
+  <div class="sw">
+    <div class="s-eye">Contato do</div>
+    <h2 class="s-title">EPROC</h2>
+    <div class="divider"></div>
+    <p style="font-size:.88rem;color:rgba(255,255,255,.7);margin-bottom:32px;">Deseja instituir um Nuproc e mapear um processo na sua instituição? <strong style="color:#fff">Venha conversar conosco!</strong></p>
+    <div class="cont-info-grid">
+      <div class="cont-items">
+        <div class="cont-item"><div class="cont-ico"><i class="fa fa-clock"></i></div><div><strong>Horário de Expediente</strong><span>das 8h às 19h, de Seg à Sexta</span></div></div>
+        <div class="cont-item"><div class="cont-ico"><i class="fa fa-phone"></i></div><div><strong>Telefone</strong><span>+55 (48) 3665-1734</span></div></div>
+        <div class="cont-item"><div class="cont-ico"><i class="fa fa-envelope"></i></div><div><strong>E-Mail</strong><span>eproc@seplan.sc.gov.br</span></div></div>
+        <div class="cont-item"><div class="cont-ico"><i class="fa fa-map-marker-alt"></i></div><div><strong>Endereço</strong><span>Rod. SC 401 – Km 15, nº 4.600, Saco Grande, Florianópolis/SC – CEP 88032-900</span></div></div>
+      </div>
+      <div class="insta-box">
+        <i class="fab fa-instagram"></i>
+        <p>+ 300 seguidores</p>
+        <strong>Instagram EPROC</strong><br>
+        <a href="https://instagram.com/" target="_blank">Seguir no Instagram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo"><img src="https://www.seplan.sc.gov.br/eproc/wp-content/uploads/2026/01/logo-sc.png" alt="SC"></div>
+        <div class="footer-brand">
+          <strong style="color:rgba(255,255,255,.75);display:block;margin-bottom:6px">Fale Conosco</strong>
+          Horário de Expediente: das 13h às 19h de Segunda a Sexta<br>
+          Telefone: +55 (48) 3665-1796<br>
+          E-mail: secretaria@seplan.sc.gov.br<br>
+          Telefone da Ouvidoria: 0800-6448500<br><br>
+          <strong style="color:rgba(255,255,255,.75);display:block;margin-bottom:4px">Endereço</strong>
+          Centro Administrativo do Governo<br>
+          Rod. SC 401 – Km 15, nº 4.600<br>
+          Saco Grande, Florianópolis, SC – CEP 88032-900
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Acesso Rápido</h4>
+        <a href="https://www.seplan.sc.gov.br/eproc/cadeia-de-valor/" target="_blank">Cadeia de Valor</a>
+        <a href="https://www.seplan.sc.gov.br/eproc/capacitacao/" target="_blank">Capacitação</a>
+        <a href="https://www.seplan.sc.gov.br/eproc/mapa-estrategico/" target="_blank">Mapa Estratégico</a>
+        <a href="https://ppn.sc.gov.br/" target="_blank">Portal de Processos de Negócios PPN</a>
+      </div>
+      <div class="footer-col">
+        <h4>Institucional</h4>
+        <a href="https://www.seplan.sc.gov.br/eproc/sobre-o-eproc/" target="_blank">Sobre a EPROC</a>
+        <a href="#">Estrutura e Organograma</a>
+        <a href="#">Equipe EPROC</a>
+        <a href="#">Legislação</a>
+        <a href="#">Planejamento Estratégico</a>
+        <a href="#">Biblioteca Repositório de Conhecimento</a>
+      </div>
+      <div class="footer-col">
+        <h4>Links Úteis</h4>
+        <a href="https://estado.sc.gov.br/politica-privacidade/" target="_blank">Política de Privacidade</a>
+        <a href="https://www.scti.sc.gov.br/mapa-do-site/" target="_blank">Mapa do Site</a>
+        <a href="https://estado.sc.gov.br/acesso-a-informacao/" target="_blank">Acesso à Informação</a>
+        <a href="https://www.ouvidoria.sc.gov.br/cidadao/" target="_blank">Ouvidoria</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Copyright © 2026 Todos os Direitos Reservados - SEPLAN - Secretaria de Estado do Planejamento | <strong style="color:rgba(255,255,255,.6)">Desenvolvedor - SCTI</strong> - Versão 3.0</span>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-x-twitter"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-flickr"></i></a>
+        <a href="#"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- CHATBOT FAB -->
+<div id="chat-fab">
+  <div class="chat-tooltip" id="tooltip">💬 Assistente EPROC</div>
+  <button class="fab-btn" onclick="toggleChat()" title="Abrir Assistente EPROC">
+    <i class="fas fa-comments"></i>
+    <div class="fab-pulse"></div>
+  </button>
+</div>
+
+<!-- CHAT WINDOW -->
+<div id="chat-window">
+  <div class="chat-hdr">
+    <div class="chat-av">🤖</div>
+    <div class="chat-hi">
+      <strong>Assistente EPROC</strong>
+      <span><span class="online-dot"></span> Especialista em Mapeamento de Processos</span>
+    </div>
+    <button class="chat-x" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs">
+    <div class="msg bot">
+      Olá! 👋 Sou o <strong>Assistente EPROC</strong>, especialista em Mapeamento e Documentação de Processos.<br><br>
+      Posso te conduzir numa entrevista técnica para preencher o <strong>Canvas de Análise de Processo</strong> e gerar automaticamente o diagrama <strong>BPMN</strong> e a <strong>Instrução de Trabalho</strong>.<br><br>
+      Por onde você quer começar?
+    </div>
+  </div>
+  <div class="chat-ftr">
+    <div class="chat-row">
+      <input class="chat-inp" id="chat-inp" type="text" placeholder="Digite sua mensagem..." onkeydown="handleKey(event)">
+      <button class="chat-snd" id="snd-btn" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+    <div class="chat-pw">Powered by PMAS · EPROC/SEPLAN-SC</div>
+  </div>
+</div>
+
+<script>
+  // ===== API CONFIG =====
+  const API_BASE_URL = "https://eproc-bot-002-backend.onrender.com";
+  const API_ENDPOINT = "/chat";
+
+  let chatOpen = false;
+  let loading = false;
+  let sessionId = 'sess_' + Math.random().toString(36).substr(2,9) + Date.now();
+
+  // Hide tooltip after 4s
+  setTimeout(() => { const t = document.getElementById('tooltip'); if(t) t.style.opacity='0'; }, 3500);
+  setTimeout(() => { const t = document.getElementById('tooltip'); if(t) t.style.display='none'; }, 4000);
+
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    document.getElementById('chat-window').classList.toggle('open', chatOpen);
+    if (chatOpen) setTimeout(() => document.getElementById('chat-inp').focus(), 280);
+  }
+
+  async function sendMsg() {
+    const inp = document.getElementById('chat-inp');
+    const text = inp.value.trim();
+    if (!text || loading) return;
+    addMsg('user', text);
+    inp.value = '';
+    loading = true;
+    document.getElementById('snd-btn').disabled = true;
+    showTyping();
+    try {
+      const r = await fetch(API_BASE_URL + API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, session_id: sessionId })
+      });
+      removeTyping();
+      if (!r.ok) { addMsg('bot', `❌ Erro ${r.status} na API. Verifique se o servidor está online.`); return; }
+      const d = await r.json();
+      const reply = d.response || d.message || d.reply || d.text || d.answer || (typeof d==='string' ? d : JSON.stringify(d));
+      addMsg('bot', reply);
+    } catch(e) {
+      removeTyping();
+      addMsg('bot', '❌ Não foi possível conectar ao servidor. Verifique se o backend está online e com CORS habilitado para esta origem.');
+      console.error(e);
+    } finally {
+      loading = false;
+      document.getElementById('snd-btn').disabled = false;
+    }
+  }
+
+  function handleKey(e) { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); } }
+
+  function addMsg(role, text) {
+    const c = document.getElementById('chat-msgs');
+    const d = document.createElement('div');
+    d.className = 'msg ' + role;
+    d.innerHTML = String(text).replace(/\n/g,'<br>');
+    c.appendChild(d);
+    c.scrollTop = c.scrollHeight;
+  }
+
+  function showTyping() {
+    const c = document.getElementById('chat-msgs');
+    const d = document.createElement('div');
+    d.className = 'msg bot typing'; d.id = 'typing';
+    d.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    c.appendChild(d); c.scrollTop = c.scrollHeight;
+  }
+
+  function removeTyping() { const e = document.getElementById('typing'); if(e) e.remove(); }
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

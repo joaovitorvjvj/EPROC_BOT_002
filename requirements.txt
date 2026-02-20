@@ -4,3 +4,9 @@ groq
 supabase
 python-dotenv
 openai
+langchain-groq
+langchain-core
+pydantic
+pydantic-settings
+httpx
+python-docx
